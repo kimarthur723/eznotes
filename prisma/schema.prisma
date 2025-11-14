@@ -1,0 +1,98 @@
+// Prisma schema for EZ Notes - AI Meeting Intelligence
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  meetings  Meeting[]
+  actionItems ActionItem[]
+}
+
+model Meeting {
+  id              String   @id @default(cuid())
+  title           String
+  zoomMeetingId   String?  // MeetingBaas bot ID (reusing field name for compatibility)
+  zoomJoinUrl     String?  // Meeting URL (Zoom, Google Meet, or Teams)
+  status          String   @default("scheduled") // scheduled, recording, processing, completed, failed
+  scheduledAt     DateTime?
+  startedAt       DateTime?
+  endedAt         DateTime?
+  duration        Int?     // in seconds
+  audioFileUrl    String?  // Recording file URL from MeetingBaas
+  summary         String?  // AI-generated meeting summary (current/final)
+  summaryHistory  String?  // JSON array of intermediate summaries with timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  participants    Participant[]
+  transcripts     Transcript[]
+  actionItems     ActionItem[]
+}
+
+model Participant {
+  id          String   @id @default(cuid())
+  name        String
+  email       String?
+  role        String?  // host, attendee, etc.
+  joinedAt    DateTime?
+  leftAt      DateTime?
+
+  // Relations
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+  @@unique([meetingId, name])
+}
+
+model Transcript {
+  id          String   @id @default(cuid())
+  text        String   // Transcript text
+  speaker     String?  // Speaker name if identified
+  timestamp   Int      // Timestamp in seconds from meeting start
+  confidence  Float?   // Transcription confidence score
+  createdAt   DateTime @default(now())
+
+  // Relations
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  @@index([meetingId])
+}
+
+model ActionItem {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  assignedTo  String?  // Email or name of assigned person
+  dueDate     DateTime?
+  status      String   @default("pending") // pending, in_progress, completed
+  priority    String?  // high, medium, low
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+
+  @@index([meetingId])
+  @@index([userId])
+}

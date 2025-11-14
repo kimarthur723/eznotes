@@ -1,0 +1,48 @@
+{
+  "name": "eznotes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "dev:ws": "tsx lib/websocket/server-entry.ts",
+    "dev:proxy": "node proxy-server.js",
+    "dev:ngrok": "ngrok http 9000 --log=stdout",
+    "dev:all": "concurrently -n \"next,ws,proxy,ngrok\" -c \"cyan,magenta,yellow,green\" \"npm:dev\" \"npm:dev:ws\" \"npm:dev:proxy\" \"npm:dev:ngrok\"",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@deepgram/sdk": "^4.11.2",
+    "@prisma/client": "^6.19.0",
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "autoprefixer": "^10.4.21",
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "http-proxy": "^1.18.1",
+    "jsonwebtoken": "^9.0.2",
+    "next": "^16.0.1",
+    "openai": "^6.8.1",
+    "postcss": "^8.5.6",
+    "prisma": "^6.19.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5.9.3",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1",
+    "concurrently": "^9.2.1",
+    "tsx": "^4.20.6"
+  }
+}
